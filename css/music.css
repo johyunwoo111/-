@@ -191,8 +191,12 @@
     height: clamp(180px, 29vh, 340px);
     overflow: auto;
     position: relative;
-    scrollbar-width: thin;
+    scrollbar-width: none;
     padding: 8px 0;
+}
+
+.music-lines::-webkit-scrollbar {
+    display: none;
 }
 
 .music-lines p {
