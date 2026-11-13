@@ -224,12 +224,12 @@ const musicCatalog = [
             events: {
                 onReady() { ready = true; select(index, wanted); },
                 onStateChange(e) {
-                    if (player.getVideoData().video_id !== musicCatalog[index].videoId) return;
+                    if (player.getVideoData()?.video_id !== musicCatalog[index].videoId) return;
                     playback(e.data === 1);
                     if (e.data === 1) status.textContent = '';
                     if (e.data === 0) select(index + 1,true);
                 },
-                onError() { failed = true; playback(false); status.textContent = '재생이 제한되었습니다. YouTube에서 들어주세요.'; },
+                onError(event) { failed = true; playback(false); status.textContent = 'YouTube 재생 오류 (' + event.data + '). YouTube에서 들어주세요.'; },
                 onAutoplayBlocked() { playback(false); status.textContent = '재생 버튼을 눌러 주세요.'; }
             }
         });
@@ -243,7 +243,7 @@ const musicCatalog = [
         document.head.append(api);
     }
     setInterval(() => {
-        if (!ready || player.getVideoData().video_id !== musicCatalog[index].videoId) return;
+        if (!ready || player.getVideoData()?.video_id !== musicCatalog[index].videoId) return;
         const duration = player.getDuration(), time = player.getCurrentTime();
         if (!duration) return;
         range.disabled = false;
