@@ -108,7 +108,6 @@ async function showLogoIntro() {
             intro.hidden = true;
             page.inert = false;
             document.documentElement.classList.remove('intro-active');
-            logo.parentElement.focus({ preventScroll: true });
             startTeaser();
         }
     }
