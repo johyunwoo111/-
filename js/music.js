@@ -127,13 +127,29 @@ const musicCatalog = [
   const http = /^https?:$/.test(location.protocol);
   const clock = n => Math.floor(n / 60) + ':' + String(Math.floor(n % 60)).padStart(2, '0');
 
-  document.addEventListener('mv-playing', () => { if (ready && player.getPlayerState() === 1) player.pauseVideo(); });
-  function playback(on) {
-    if (on) document.dispatchEvent(new Event('music-playing'));
-    disc.classList.toggle('playing', on);
+  let previousTime = null, lastAdvance = -Infinity;
+  function setWanted(on) {
+    wanted = on;
+    lastAdvance = -Infinity;
+    previousTime = null;
     play.textContent = on ? 'Ⅱ' : '▶';
     play.setAttribute('aria-label', on ? '일시정지' : '재생');
-    if (on) document.querySelector('.teaser-video')?.pause();
+    if (!on) playback(false);
+  }
+  function pause() {
+    setWanted(false);
+    if (ready) player.pauseVideo();
+    status.textContent = '';
+  }
+  document.addEventListener('mv-playing', () => { if (wanted) pause(); });
+  function playback(on) {
+    if (disc.classList.contains('playing') === on) return;
+    disc.classList.toggle('playing', on);
+    if (on) {
+      status.textContent = '';
+      document.dispatchEvent(new Event('music-playing'));
+      document.querySelector('.teaser-video')?.pause();
+    }
   }
 
   async function showLyrics(song) {
@@ -176,7 +192,7 @@ const musicCatalog = [
   function select(i, autoplay) {
     index = (i + musicCatalog.length) % musicCatalog.length;
     const song = musicCatalog[index];
-    wanted = autoplay;
+    setWanted(autoplay && http);
     failed = false;
     playback(false);
     const art = 'https://i.ytimg.com/vi/' + song.videoId + '/hqdefault.jpg';
@@ -190,7 +206,7 @@ const musicCatalog = [
     find('.music-time span:first-child').textContent = find('.music-time span:last-child').textContent = '0:00';
     showLyrics(song);
     if (ready) player[autoplay ? 'loadVideoById' : 'cueVideoById'](song.videoId);
-    status.textContent = !http ? 'Live Server로 열거나 YouTube에서 들어주세요.' : autoplay && !ready ? '플레이어 연결 중…' : '';
+    status.textContent = !http ? 'Live Server로 열거나 YouTube에서 들어주세요.' : autoplay ? (ready ? '재생 준비 중…' : '플레이어 연결 중…') : '';
   }
 
   musicCatalog.forEach((s, i) => {
@@ -206,13 +222,15 @@ const musicCatalog = [
   find('[data-action="next"]').onclick = () => select(index + 1, true);
   play.onclick = () => {
     if (!http) { find('.music-video-link').click(); return; }
-    if (!ready) { wanted = true; status.textContent = '플레이어 연결 중…'; return; }
+    if (wanted) { pause(); return; }
+    setWanted(true);
+    if (!ready) { status.textContent = '플레이어 연결 중…'; return; }
     if (failed) { select(index, true); return; }
-    if (player.getPlayerState() === 1) player.pauseVideo();
-    else player.playVideo();
+    status.textContent = '재생 준비 중…';
+    player.playVideo();
   };
   range.oninput = () => { dragging = true; find('.music-time span:first-child').textContent = clock(Number(range.value)); };
-  range.onchange = () => { if (ready) player.seekTo(Number(range.value), true); dragging = false; };
+  range.onchange = () => { previousTime = null; if (ready) player.seekTo(Number(range.value), true); dragging = false; };
   range.onblur = range.onpointercancel = () => { dragging = false; };
 
   select(0, false);
@@ -225,12 +243,12 @@ const musicCatalog = [
         onReady() { ready = true; select(index, wanted); },
         onStateChange(e) {
           if (player.getVideoData()?.video_id !== musicCatalog[index].videoId) return;
-          playback(e.data === 1);
-          if (e.data === 1) status.textContent = '';
-          if (e.data === 0) select(index + 1, true);
+          if (e.data === 1 && !wanted) { player.pauseVideo(); return; }
+          playback(wanted && e.data === 1);
+          if (e.data === 0 && wanted) select(index + 1, true);
         },
-        onError(event) { failed = true; playback(false); status.textContent = 'YouTube 재생 오류 (' + event.data + '). YouTube에서 들어주세요.'; },
-        onAutoplayBlocked() { playback(false); status.textContent = '재생 버튼을 눌러 주세요.'; }
+        onError(event) { failed = true; setWanted(false); status.textContent = 'YouTube 재생 오류 (' + event.data + '). YouTube에서 들어주세요.'; },
+        onAutoplayBlocked() { setWanted(false); status.textContent = '재생 버튼을 눌러 주세요.'; }
       }
     });
   }
@@ -243,8 +261,15 @@ const musicCatalog = [
     document.head.append(api);
   }
   setInterval(() => {
-    if (!ready || player.getVideoData()?.video_id !== musicCatalog[index].videoId) return;
+    if (!ready) return;
+    const videoId = player.getVideoData()?.video_id;
+    if (videoId && videoId !== musicCatalog[index].videoId) return;
     const duration = player.getDuration(), time = player.getCurrentTime();
+    if (wanted && previousTime !== null && !dragging) {
+      if (time > previousTime) lastAdvance = performance.now();
+      playback(performance.now() - lastAdvance < 1800 || player.getPlayerState() === 1);
+    }
+    previousTime = time;
     if (!duration) return;
     range.disabled = false;
     range.max = duration;
