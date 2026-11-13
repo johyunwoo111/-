@@ -60,7 +60,7 @@ nav {
     width: min(var(--header-width), calc(100% - 2 * var(--page-gutter)));
     margin-inline: auto;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.35fr) repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     place-items: center;
 }
 
@@ -70,12 +70,20 @@ nav a {
     border-radius: 16px;
 }
 
-nav> :first-child {
-    justify-self: start;
+#content-menu > :nth-child(4) {
+    grid-column: 5;
 }
 
-nav> :last-child {
-    justify-self: end;
+header > .brand {
+    position: absolute;
+    top: 2.5%;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: auto;
+}
+
+.menu-heart {
+    display: none;
 }
 
 nav a:focus-visible {
@@ -407,5 +415,67 @@ html.intro-active {
 
     .member-names[aria-hidden] {
         display: none;
+    }
+}
+@media (max-width: 768px) {
+    header.is-floating .brand {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .menu-heart {
+        --heart: #e57ca9;
+        position: absolute;
+        right: var(--page-gutter);
+        top: 50%;
+        transform: translateY(-50%);
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        padding: 2px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+    .menu-heart .bubble-face {
+        animation: none;
+    }
+
+    #content-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: var(--page-gutter);
+        width: min(320px, calc(100% - 2 * var(--page-gutter)));
+        height: auto;
+        max-height: calc(100dvh - var(--bar-height));
+        overflow-y: auto;
+        padding: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        border-radius: 0 0 18px 18px;
+        background: #fff9fd;
+        box-shadow: 0 8px 18px #44274426;
+        pointer-events: auto;
+    }
+
+    .menu-heart[aria-expanded="true"] + #content-menu {
+        display: grid;
+    }
+
+    #content-menu > :nth-child(4) {
+        grid-column: auto;
+    }
+
+    #content-menu .bubble-link {
+        width: 100%;
+        height: auto;
+    }
+
+    #content-menu .bubble-face span {
+        font-size: 12px;
     }
 }
