@@ -32,11 +32,11 @@ const youtubeChannels = [
     },
     {
         label: 'ISEGYE IDOL', name: '이세계아이돌', official: true, channelUrl: '', videos: [
-            ["zI3m2AmGQhI", "ISEGYE IDOL (이세계아이돌) ‘Dream Residue’ (Official Audio)"],
-            ["HlKpuPGpG84", "ISEGYE IDOL (이세계아이돌) ‘ANTI-HERO’ (Official Audio)"],
-            ["GHJ9XiIx_AQ", "ISEGYE IDOL (이세계아이돌) ‘BACK 2 THE FUTURE’ (Official Audio)"],
-            ["Wqx8qNFpQbo", "ISEGYE IDOL (이세계아이돌) ‘REBELS’ (Official Audio)"],
-            ["NCrqAAdZlGk", "ISEGYE IDOL (이세계아이돌) ‘연애세포 (恋愛細胞)’ (Official Audio)"],
+            ["fff8P0kYexQ", "이세계아이돌(ISEGYE IDOL) 'Nameless' Official Performance MV"],
+            ["3cEUPoPXz7E", "이세계아이돌(ISEGYE IDOL) 'Be My Light' Official MV"],
+            ["zFmKBpHrKY8", "이세계아이돌(ISEGYE IDOL) 'Be My Light' Official Performance MV"],
+            ["8IY44RZHyw8", "ISEGYE IDOL (이세계아이돌) ‘Smile For You’ Special Clip"],
+            ["hT8ahye6kTg", "이세계아이돌(ISEGYE IDOL) '화이트 (White)' Special Clip"],
             ["y-klhPVFblg", "ISEGYE IDOL (이세계아이돌) ‘REBELS’ Official MV"]
         ]
     },
