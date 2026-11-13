@@ -40,7 +40,14 @@
     </div>
     <div id="wrap">
         <header>
-            <nav aria-label="콘텐츠 메뉴">
+            <a class="brand" href="#home" aria-label="맨 위로">
+                <img src="images/logo.png" alt="이세계아이돌">
+            </a>
+            <button class="menu-heart" type="button" aria-label="메뉴 열기" aria-expanded="false"
+                aria-controls="content-menu">
+                <span class="bubble-face" aria-hidden="true"></span>
+            </button>
+            <nav id="content-menu" aria-label="콘텐츠 메뉴">
                 <a class="bubble-link" href="#music-video" style="--heart:#CE73E0">
                     <span class="bubble-face"><span>MUSIC<br>VIDEO</span>
                     </span>
@@ -52,9 +59,6 @@
                 <a class="bubble-link" href="#album" style="--heart:#767FE3">
                     <span class="bubble-face"><span>ALBUM</span>
                     </span>
-                </a>
-                <a class="brand" href="#home" aria-label="맨 위로">
-                    <img src="images/logo.png" alt="이세계아이돌">
                 </a>
                 <a class="bubble-link" href="#about" style="--heart:#EB86BA"><span
                         class="bubble-face"><span>ABOUT</span>
