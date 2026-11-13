@@ -17,14 +17,14 @@
     <!-- 파비콘 -->
     <link rel="icon" href="images/logo_32x32.png">
     <!-- 외부 css 연결 -->
-    <link rel="stylesheet" href="css/style.css?v=6046ddcd0009">
+    <link rel="stylesheet" href="css/style.css?v=0b15af472fb5">
     <link rel="stylesheet" href="css/burst.css">
 
     <link rel="stylesheet" href="css/youtube.css">
     <link rel="stylesheet" href="css/music.css?v=30c7fbb97170">
     <link rel="stylesheet" href="css/mv.css">
     <link rel="stylesheet" href="css/about.css">
-    <link rel="stylesheet" href="css/album.css">
+    <link rel="stylesheet" href="css/album.css?v=bd31a6520e94">
     <link rel="stylesheet" href="css/member-profiles.css">
     <link rel="stylesheet" href="css/footer.css">
 </head>
@@ -172,8 +172,14 @@
             </section>
             <section id="album" aria-labelledby="album-heading">
                 <div class="album-inner">
-                    <h2 id="album-heading">ISEGYE IDOL 앨범</h2>
-                    <div class="album-strip">
+                    <div class="album-heading-row">
+                        <h2 id="album-heading">ISEGYE IDOL 앨범</h2>
+                        <div class="album-controls">
+                            <button type="button" aria-label="이전 앨범" aria-controls="album-strip"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15.5 5 8.5 12 15.5 19"/></svg></button>
+                            <button type="button" aria-label="다음 앨범" aria-controls="album-strip"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="8.5 5 15.5 12 8.5 19"/></svg></button>
+                        </div>
+                    </div>
+                    <div class="album-strip" id="album-strip">
                         <a href="https://kr.ktown4u.com/iteminfo?goods_no=148384" target="_blank"
                             rel="noopener noreferrer" draggable="false">
                             <img src="images/Album4.jpg" alt="" loading="lazy" draggable="false">
@@ -288,7 +294,7 @@
                 </div>
             </div>
         </footer>
-        <a class="back-to-top" href="#wrap" aria-label="페이지 맨 위로" title="맨 위로"><span aria-hidden="true">↑</span></a>
+        <a class="back-to-top" href="#wrap" aria-label="페이지 맨 위로" title="맨 위로"><img src="images/logo.png" width="34" height="34" alt="" style="object-fit:contain"></a>
     </div>
 
 
@@ -296,11 +302,11 @@
     <!-- 제이쿼리 -->
     <script src="js/jquery-4.0.0.min.js"></script>
     <script src="js/script.js?v=c5860e19decd" defer></script>
-    <script src="js/youtube.js" defer></script>
+    <script src="js/youtube.js?v=0a5895d1986f" defer></script>
     <script src="js/music.js?v=2711d73a92ca" defer></script>
     <script src="js/mv.js" defer></script>
     <script src="js/about.js" defer></script>
-    <script src="js/album.js" defer></script>
+    <script src="js/album.js?v=eb5a8038112f" defer></script>
     <script src="js/member-profiles.js" defer></script>
 </body>
 
