@@ -136,6 +136,7 @@ const musicCatalog = [
     play.setAttribute('aria-label', on ? '일시정지' : '재생');
     if (!on) playback(false);
   }
+
   function pause() {
     setWanted(false);
     if (ready) player.pauseVideo();
@@ -154,38 +155,120 @@ const musicCatalog = [
 
   async function showLyrics(song) {
     const serial = ++request;
+
     active = -1;
     timestamps = [];
+
     lines.replaceChildren();
     lines.scrollTop = 0;
+
     const link = find('.music-lyrics-link');
     link.hidden = !song.trackPage;
-    if (song.trackPage) link.href = song.trackPage;
+
+    if (song.trackPage) {
+      link.href = song.trackPage;
+    }
+
     if (!song.lyricId) {
-      lines.textContent = '이 곡의 가사는 아래 음원 페이지에서 볼 수 있습니다.';
+      lines.textContent =
+        '이 곡은 시간 동기화 가사가 제공되지 않습니다.';
       return;
     }
+
     lines.textContent = '가사를 불러오는 중…';
+
     try {
       let entry = lyrics.get(song.lyricId);
+
       if (!entry) {
-        const response = await fetch('https://lrclib.net/api/get/' + song.lyricId);
-        if (!response.ok) throw Error();
+        const response = await fetch(
+          'https://lrclib.net/api/get/' + song.lyricId
+        );
+
+        if (!response.ok) {
+          throw new Error('가사 요청 실패');
+        }
+
         entry = await response.json();
         lyrics.set(song.lyricId, entry);
       }
+
+      // 곡이 변경되었다면 이전 요청 결과 무시
       if (serial !== request) return;
-      const timed = [...(entry.syncedLyrics || '').matchAll(/\[(\d+):(\d+(?:\.\d+)?)\]\s*([^\r\n]*)/g)]
-        .filter(m => m[3].trim());
-      timestamps = timed.map(m => Number(m[1]) * 60 + Number(m[2]));
-      const text = timed.length ? timed.map(m => m[3]) : (entry.plainLyrics || '').split('\n');
-      lines.replaceChildren(...text.map(value => {
-        const p = document.createElement('p');
-        p.textContent = value;
-        return p;
-      }));
-    } catch {
-      if (serial === request) lines.textContent = '가사를 불러오지 못했습니다.';
+
+      const synced = entry.syncedLyrics || '';
+
+      const timed = [...synced.matchAll(
+        /\[(\d+):(\d+(?:\.\d+)?)\]\s*([^\r\n]*)/g
+      )].filter(match => match[3].trim());
+
+      timestamps = timed.map(match =>
+        Number(match[1]) * 60 + Number(match[2])
+      );
+
+      const lyricText = timed.length
+        ? timed.map(match => match[3])
+        : (entry.plainLyrics || '').split('\n');
+
+      lines.replaceChildren(
+        ...lyricText.map(value => {
+          const p = document.createElement('p');
+          p.textContent = value;
+          return p;
+        })
+      );
+
+      // 시간 동기화 여부 확인
+      console.log(
+        `[${song.title}] 동기화 가사:`,
+        timed.length > 0 ? '있음' : '없음',
+        '타임스탬프 수:',
+        timestamps.length
+      );
+
+      // 가사 로딩 후 현재 재생 시간에 맞춰 동기화
+      if (ready && player && timestamps.length) {
+        syncLyrics(player.getCurrentTime());
+      }
+
+    } catch (error) {
+      if (serial === request) {
+        lines.textContent =
+          '가사를 불러오지 못했습니다.';
+      }
+
+      console.error('가사 로딩 오류:', error);
+    }
+  }
+
+
+  function syncLyrics(time) {
+    if (!timestamps.length) return;
+
+    const next = timestamps.findLastIndex(t => t <= time);
+
+    // 활성 가사가 바뀌지 않았다면 실행하지 않음
+    if (next === active) return;
+
+    // 이전 가사 활성화 해제
+    lines.children[active]?.classList.remove('active');
+
+    active = next;
+
+    const currentLine = lines.children[next];
+
+    if (currentLine) {
+      // 현재 가사 활성화
+      currentLine.classList.add('active');
+
+      // 현재 가사가 가사 영역 중앙 부근에 오도록 스크롤
+      const scrollPosition =
+        currentLine.offsetTop - lines.clientHeight * 0.4;
+
+      lines.scrollTo({
+        top: Math.max(0, scrollPosition),
+        behavior: 'smooth'
+      });
     }
   }
 
@@ -220,56 +303,173 @@ const musicCatalog = [
   });
   find('[data-action="prev"]').onclick = () => select(index - 1, true);
   find('[data-action="next"]').onclick = () => select(index + 1, true);
+
   play.onclick = () => {
-    if (!http) { find('.music-video-link').click(); return; }
-    if (wanted) { pause(); return; }
-    setWanted(true);
-    if (!ready) { status.textContent = '플레이어 연결 중…'; return; }
-    if (failed) { select(index, true); return; }
-    status.textContent = '재생 준비 중…';
-    player.playVideo();
+    // 로컬 파일로 실행한 경우
+    if (!http) {
+      status.textContent =
+        'Live Server 또는 GitHub Pages에서 실행해 주세요.';
+      return;
+    }
+
+    // 플레이어 연결 전
+    if (!ready) {
+      wanted = true;
+      status.textContent = '플레이어 연결 중…';
+      return;
+    }
+
+    // 재생 오류가 발생한 경우
+    if (failed) {
+      select(index, true);
+      return;
+    }
+
+    // 재생 및 일시정지
+    if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+      player.pauseVideo();
+    } else {
+      player.playVideo();
+    }
   };
-  range.oninput = () => { dragging = true; find('.music-time span:first-child').textContent = clock(Number(range.value)); };
-  range.onchange = () => { previousTime = null; if (ready) player.seekTo(Number(range.value), true); dragging = false; };
-  range.onblur = range.onpointercancel = () => { dragging = false; };
+  
+  range.oninput = () => {
+    if (!ready || failed) return;
+
+    dragging = true;
+
+    find('.music-time span:first-child').textContent =
+      clock(Number(range.value));
+  };
+
+  range.onchange = () => {
+    if (
+      ready &&
+      !failed &&
+      player.getDuration() > 0
+    ) {
+      player.seekTo(Number(range.value), true);
+    }
+
+    dragging = false;
+  };
 
   select(0, false);
+
+  // HTML 파일 직접 실행 여부 확인
   if (!http) return;
+
+  let connecting = false;
+  let connectionTimer;
+
   function connect() {
+    // 중복 생성 방지
+    if (connecting || ready) return;
+    if (!window.YT?.Player) return;
+
+    connecting = true;
+
     player = new YT.Player('music-yt', {
-      width: '100%', height: 200, videoId: musicCatalog[index].videoId,
-      playerVars: { playsinline: 1, origin: location.origin, rel: 0 },
+      width: '100%',
+      height: '200',
+      videoId: musicCatalog[index].videoId,
+
+      playerVars: {
+        playsinline: 1,
+        origin: location.origin,
+        rel: 0,
+        controls: 1
+      },
+
       events: {
-        onReady() { ready = true; select(index, wanted); },
-        onStateChange(e) {
-          if (player.getVideoData()?.video_id !== musicCatalog[index].videoId) return;
-          if (e.data === 1 && !wanted) { player.pauseVideo(); return; }
-          playback(wanted && e.data === 1);
-          if (e.data === 0 && wanted) select(index + 1, true);
+        onReady() {
+          clearTimeout(connectionTimer);
+          ready = true;
+          status.textContent = '';
+          select(index, wanted);
+          console.log('YouTube 플레이어 연결 성공');
         },
-        onError(event) { failed = true; setWanted(false); status.textContent = 'YouTube 재생 오류 (' + event.data + '). YouTube에서 들어주세요.'; },
-        onAutoplayBlocked() { setWanted(false); status.textContent = '재생 버튼을 눌러 주세요.'; }
+
+        onStateChange(e) {
+          if (
+            player.getVideoData()?.video_id !==
+            musicCatalog[index].videoId
+          ) return;
+
+          playback(e.data === YT.PlayerState.PLAYING);
+
+          if (e.data === YT.PlayerState.PLAYING) {
+            status.textContent = '';
+          }
+
+          if (e.data === YT.PlayerState.ENDED) {
+            select(index + 1, true);
+          }
+        },
+
+        onError(e) {
+          failed = true;
+          playback(false);
+
+          status.textContent =
+            `YouTube 재생 오류 (${e.data})`;
+
+          console.error('YouTube 오류 코드:', e.data);
+        },
+
+        onAutoplayBlocked() {
+          playback(false);
+          status.textContent =
+            '자동 재생이 차단되었습니다. 재생 버튼을 눌러 주세요.';
+        }
       }
     });
   }
-  window.onYouTubeIframeAPIReady = connect;
-  if (window.YT?.Player) connect();
-  else {
-    const api = document.createElement('script');
-    api.src = 'https://www.youtube.com/iframe_api';
-    api.onerror = () => { status.textContent = 'YouTube 연결을 확인해 주세요.'; };
-    document.head.append(api);
-  }
-  setInterval(() => {
-    if (!ready) return;
-    const videoId = player.getVideoData()?.video_id;
-    if (videoId && videoId !== musicCatalog[index].videoId) return;
-    const duration = player.getDuration(), time = player.getCurrentTime();
-    if (wanted && previousTime !== null && !dragging) {
-      if (time > previousTime) lastAdvance = performance.now();
-      playback(performance.now() - lastAdvance < 1800 || player.getPlayerState() === 1);
+
+  // API가 이미 로드되어 있다면 바로 연결
+  if (window.YT?.Player) {
+    connect();
+  } else {
+    // 다른 JS의 기존 콜백도 유지
+    const previousCallback =
+      window.onYouTubeIframeAPIReady;
+
+    window.onYouTubeIframeAPIReady = function () {
+      if (typeof previousCallback === 'function') {
+        previousCallback();
+      }
+      connect();
+    };
+
+    // API 스크립트 중복 추가 방지
+    if (!document.querySelector(
+      'script[src="https://www.youtube.com/iframe_api"]'
+    )) {
+      const api = document.createElement('script');
+      api.src = 'https://www.youtube.com/iframe_api';
+
+      api.onerror = () => {
+        clearTimeout(connectionTimer);
+        status.textContent =
+          'YouTube API를 불러오지 못했습니다.';
+      };
+
+      document.head.append(api);
     }
-    previousTime = time;
+  }
+
+  // 연결이 지연되거나 실패한 경우 안내
+  connectionTimer = setTimeout(() => {
+    if (!ready) {
+      status.textContent =
+        'YouTube 플레이어 연결에 실패했습니다.';
+      console.error('YouTube 플레이어 초기화 실패');
+    }
+  }, 10000);
+
+  setInterval(() => {
+    if (!ready || player.getVideoData()?.video_id !== musicCatalog[index].videoId) return;
+    const duration = player.getDuration(), time = player.getCurrentTime();
     if (!duration) return;
     range.disabled = false;
     range.max = duration;
@@ -278,14 +478,16 @@ const musicCatalog = [
       range.value = time;
       find('.music-time span:first-child').textContent = clock(time);
     }
-    const next = timestamps.findLastIndex(t => t <= time);
-    if (next === active) return;
-    lines.children[active]?.classList.remove('active');
-    active = next;
-    const p = lines.children[next];
-    if (p) {
-      p.classList.add('active');
-      lines.scrollTop = p.offsetTop - lines.clientHeight * .4;
-    }
+    // const next = timestamps.findLastIndex(t => t <= time);
+    // if (next === active) return;
+    // lines.children[active]?.classList.remove('active');
+    // active = next;
+    // const p = lines.children[next];
+    // if (p) {
+    //   p.classList.add('active');
+    //   lines.scrollTop = p.offsetTop - lines.clientHeight * .4;
+    // }
+
+    syncLyrics(time);
   }, 250);
 })();
