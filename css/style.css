@@ -242,7 +242,7 @@ html.intro-active {
     width: 100%;
     aspect-ratio: 16 / 9;
     max-height: 100svh;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 #home {
