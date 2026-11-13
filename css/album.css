@@ -11,7 +11,7 @@
 
 #album-heading {
     width: fit-content;
-    margin: 0 0 24px;
+    margin: 0;
     font: 400 clamp(24px, 2.5vw, 40px) GanaChocolate, serif;
     border-bottom: 3px solid #4f9caf;
 }
@@ -75,4 +75,24 @@
 .album-store:hover,
 .album-store:focus-visible {
     color: #152e29;
+}
+.album-heading-row, .album-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.album-heading-row {
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+.album-controls button {
+    width: 44px;
+    height: 44px;
+    border: 1px solid #659d94;
+    border-radius: 50%;
+    background: #edfffa;
+    color: #23433d;
+    display: grid;
+    place-items: center;
+    padding: 0;
 }

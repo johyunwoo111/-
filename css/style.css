@@ -479,3 +479,17 @@ html.intro-active {
         font-size: 12px;
     }
 }
+
+@media (any-pointer: fine) {
+    :root { --content-cursor: url("../images/WAKDU_cursor_32x32.png") 4 3, auto; }
+    #youtube, .bubble-link[href="#youtube"] { --content-cursor: url("../images/INE_cursor_32x32.png") 4 3, auto; }
+    #music, .bubble-link[href="#music"] { --content-cursor: url("../images/JINGBURGER_cursor_32x32.png") 4 3, auto; }
+    #music-video, .bubble-link[href="#music-video"] { --content-cursor: url("../images/LILPA_cursor_32x32.png") 4 3, auto; }
+    #about, .bubble-link[href="#about"] { --content-cursor: url("../images/JURURU_cursor_32x32.png") 4 3, auto; }
+    #album, .bubble-link[href="#album"] { --content-cursor: url("../images/GOSEGU_cursor_32x32.png") 4 3, auto; }
+    #gallery, .bubble-link[href="#gallery"] { --content-cursor: url("../images/VIICHAN_cursor_32x32.png") 4 3, auto; }
+
+    * {
+        cursor: var(--content-cursor) !important;
+    }
+}
