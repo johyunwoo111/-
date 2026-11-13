@@ -371,14 +371,14 @@ const musicCatalog = [
 
     player = new YT.Player('music-yt', {
       width: '100%',
-      height: '200',
+      height: '100%',
       videoId: musicCatalog[index].videoId,
 
       playerVars: {
         playsinline: 1,
         origin: location.origin,
         rel: 0,
-        controls: 1
+        controls: 0
       },
 
       events: {
