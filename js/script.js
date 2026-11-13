@@ -1,5 +1,28 @@
 const header = document.querySelector('header');
 
+const menuButton = header.querySelector('.menu-heart');
+function setMenuOpen(open) {
+    menuButton.setAttribute('aria-expanded', String(open));
+    menuButton.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+}
+menuButton.addEventListener('click', () => setMenuOpen(menuButton.getAttribute('aria-expanded') !== 'true'));
+header.addEventListener('click', event => {
+    if (event.target.closest('a')) setMenuOpen(false);
+});
+document.addEventListener('pointerdown', event => {
+    if (!header.contains(event.target)) setMenuOpen(false);
+});
+header.addEventListener('focusout', event => {
+    if (event.relatedTarget && !header.contains(event.relatedTarget)) setMenuOpen(false);
+});
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
+        setMenuOpen(false);
+        menuButton.focus();
+    }
+});
+window.matchMedia('(max-width: 768px)').addEventListener('change', () => setMenuOpen(false));
+
 function updateHeader() {
     header.classList.toggle('is-floating', window.scrollY >= header.offsetHeight);
 }

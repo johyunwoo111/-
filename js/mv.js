@@ -1,11 +1,35 @@
 (() => {
     const videos = [
-        ['7V7ZsMt6r-w', 'ELEVATE · 이세계페스티벌 2025 실황'],
-        ['y-klhPVFblg', 'REBELS · Official MV'],
-        ['fff8P0kYexQ', 'Nameless · Performance MV'],
-        ['nsVbRO_k9b8', 'MEMORY · 이세계페스티벌 2025 실황'],
-        ['zFmKBpHrKY8', 'Be My Light · Performance MV'],
-        ['nz2_gNQDiVM', 'STARGAZERS · Official MV']
+        ["y-klhPVFblg", "ISEGYE IDOL (이세계아이돌) ‘REBELS’ Official MV"],
+        ["zGOzGcEbd-s", "GOSEGU (고세구) ‘고양이가 세상을 구한다!’ Official MV"],
+        ["8IY44RZHyw8", "ISEGYE IDOL (이세계아이돌) ‘Smile For You’ Special Clip"],
+        ["hT8ahye6kTg", "이세계아이돌(ISEGYE IDOL) '화이트 (White)' Special Clip"],
+        ["zFmKBpHrKY8", "이세계아이돌(ISEGYE IDOL) 'Be My Light' Official Performance MV"],
+        ["fff8P0kYexQ", "이세계아이돌(ISEGYE IDOL) 'Nameless' Official Performance MV"],
+        ["3cEUPoPXz7E", "이세계아이돌(ISEGYE IDOL) 'Be My Light' Official MV"],
+        ["nz2_gNQDiVM", "이세계아이돌 (ISEGYE IDOL) 'STARGAZERS' Official MV"],
+        ["DJLa8QYUtmQ", "이세계아이돌 (ISEGYE IDOL) 'Misty Rainbow' Official MV"],
+        ["v9Jqz13gg8k", "이세계아이돌 (ISEGYE IDOL) - SYZYGY (ISEGYE FESTIVAL SEOUL 2025 THEME SONG)"],
+        ["rDFUl2mHIW4", "이세계아이돌 (ISEGYE IDOL) - KIDDING (키딩) Official MV"],
+        ["8KTFf2X-ago", "이세계아이돌 (ISEGYE IDOL) - Another World (어나더 월드) Official MV (차원을넘어 이세계아이돌 웹툰 OST)"],
+        ["7XFJ4s0j9z0", "숲튽훈 & 주르르 (STH & JURURU) - 고속도로 로망스 (Freeway Romance) Official MV"],
+        ["QgMFpuos4Rg", "이세계아이돌 (ISEGYE IDOL) - LOCKDOWN (락다운) Official MV (마법소녀 이세계아이돌 웹툰 OST)"],
+        ["JY-gJkMuJ94", "겨울봄 (Winter Spring) MV - 이세계아이돌 (ISEGYE IDOL)"],
+        ["fgSXAKsq-Vo", "이세계아이돌 (ISEGYE IDOL) - 리와인드 (RE:WIND) Official MV"],
+        ["fZcNvcB6KpI", "이세계아이돌(ISEGYE IDOL) - RE : WIND 🌐 이세계 페스티벌 2025"],
+        ["cZ2jFT4HehI", "이세계아이돌(ISEGYE IDOL) 오프닝 무대 | 🌐 이세계 페스티벌 2025 - SOOP Limited Streaming Soon"],
+        ["nsVbRO_k9b8", "이세계아이돌 (ISEGYE IDOL) 'MEMORY' 이세계페스티벌 2025 실황"],
+        ["7V7ZsMt6r-w", "이세계아이돌 (ISEGYE IDOL) 'ELEVATE' 이세계페스티벌 2025 실황"],
+        ["MCyL9k_Tiok", "이세계아이돌 (ISEGYE IDOL) 'STARGAZERS' 이세계페스티벌 2025 실황"],
+        ["opQWTxOwK2I", "We Are - ONE OK ROCK / COVER by LILPA @ LILPACON : Going Out"],
+        ["0dOQ1pEkpTY", "[Official 4K] RE:WIND(리와인드) : ISEGYE IDOL (이세계아이돌 | イセゲアイドル)  | 🌐 이세계페스티벌"],
+        ["IdKit_sig7Y", "[Official 4K] OVER(오버) : ISEGYE IDOL (이세계아이돌 | イセゲアイドル)  | 🌐 이세계페스티벌"],
+        ["w8uZZw1Grp8", "[Official 4K] Superhero(슈퍼 히어로) : ISEGYE IDOL (이세계아이돌 | イセゲアイドル)  | 🌐 이세계페스티벌 l presented by 슈퍼아이"],
+        ["3tJI2oSNUFI", "[Official 4K] Winter Spring(겨울봄) : ISEGYE IDOL (이세계아이돌 | イセゲアイドル)  | 🌐 이세계페스티벌"],
+        ["k5O1F_IS0mU", "이세계 페스티벌 - RE:WIND"],
+        ["i4SRH9jfUMQ", "이세계아이돌 (ISEGYE IDOL) - OVER (오버) 이세계 페스티벌 Ver."],
+        ["wyhwJnNpVJI", "이세계아이돌 (ISEGYE IDOL) - Superhero (슈퍼히어로) 이세계 페스티벌 Ver."],
+        ["DIomV3Ebmz8", "이세계 페스티벌 - 겨울봄"]
     ];
     const root = document.getElementById('music-video');
     const find = selector => root.querySelector(selector);
